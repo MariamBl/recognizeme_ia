@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "532632325358",
+    "project_id": "recognizemeia-c4f9a",
+    "storage_bucket": "recognizemeia-c4f9a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:532632325358:android:49339035ad27c0f016b7ff",
+        "android_client_info": {
+          "package_name": "com.example.recognizeme_ia"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKeGLCWvFXV0Y-DChf2Tz3pYflSexS_Ok"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

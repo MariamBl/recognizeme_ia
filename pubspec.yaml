@@ -1,0 +1,23 @@
+name: recognizeme_ia
+description: A new Flutter project.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.1.5 <4.0.0'
+
+dependencies:
+  firebase_auth: ^4.15.0
+  firebase_core: ^2.24.0
+  firebase_ui_auth: ^1.10.0
+  get: ^4.6.1
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
