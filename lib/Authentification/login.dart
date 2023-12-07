@@ -6,20 +6,26 @@ import 'package:recognizeme_ia/Authentification/home.dart';
 class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.active) {
-          final user = snapshot.data;
-          if (user != null) {
-            return Home();
+    return Scaffold(
+      // appBar: AppBar(
+      //   // title: Text('Login'),
+      //   backgroundColor: Colors.blue, // Set the color of the app bar
+      // ),
+      body: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            final user = snapshot.data;
+            if (user != null) {
+              return Home();
+            } else {
+              return SignInScreen();
+            }
           } else {
-            return SignInScreen();
+            return CircularProgressIndicator();
           }
-        } else {
-          return CircularProgressIndicator();
-        }
-      },
+        },
+      ),
     );
   }
-} 
+}

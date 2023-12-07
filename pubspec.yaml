@@ -10,6 +10,7 @@ dependencies:
   firebase_auth: ^4.15.0
   firebase_core: ^2.24.0
   firebase_ui_auth: ^1.10.0
+  google_nav_bar: ^5.0.6
   get: ^4.6.1
   flutter:
     sdk: flutter
