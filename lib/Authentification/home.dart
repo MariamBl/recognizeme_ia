@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:recognizeme_ia/Activites/Create.dart';
+import 'package:recognizeme_ia/Activites/list.dart';
 import 'package:recognizeme_ia/profile.dart';
 
 class Home extends StatelessWidget {
@@ -57,6 +58,12 @@ class Home extends StatelessWidget {
               MaterialPageRoute(builder: (context) => CreateActivityScreen()),
             );
           }
+          // else if (index == 2) {
+          //   Navigator.push(
+          //     context,
+          //     MaterialPageRoute(builder: (context) => ActivityListScreen()),
+          //   );
+          // }
         },
       ),
     );
