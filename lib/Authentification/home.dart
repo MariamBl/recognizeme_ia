@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:recognizeme_ia/Activites/Create.dart';
 import 'package:recognizeme_ia/profile.dart';
 
 class Home extends StatelessWidget {
@@ -53,7 +54,7 @@ class Home extends StatelessWidget {
           if (index == 1) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => HomePage()),
+              MaterialPageRoute(builder: (context) => CreateActivityScreen()),
             );
           }
         },
