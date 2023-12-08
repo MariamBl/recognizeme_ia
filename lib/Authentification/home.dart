@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:recognizeme_ia/Activites/Create.dart';
@@ -24,17 +25,37 @@ class Home extends StatelessWidget {
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Welcome to the Home page!'),
-            // ElevatedButton(
-            //   onPressed: _logout,
-            //   child: Text('Logout'),
-            // ),
-          ],
-        ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('activite').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              var activity = snapshot.data!.docs[index].data() as Map<String, dynamic>;
+
+              return ListTile(
+                leading: Image.network(
+                  activity['imageUrl'],
+                  height: 50,
+                  width: 50,
+                  fit: BoxFit.cover,
+                ),
+                title: Text(activity['titre']),
+                subtitle: Text(activity['lieu']),
+                trailing: Text("\$${activity['prix']}"),
+                onTap: () {
+                  // Handle tapping on an activity to view details if needed
+                },
+              );
+            },
+          );
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -59,12 +80,7 @@ class Home extends StatelessWidget {
               MaterialPageRoute(builder: (context) => CreateActivityScreen()),
             );
           }
-          // else if (index == 2) {
-          //   Navigator.push(
-          //     context,
-          //     MaterialPageRoute(builder: (context) => ActivityListScreen()),
-          //   );
-          // }
+        
         },
       ),
     );
