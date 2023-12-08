@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:recognizeme_ia/Activites/Create.dart';
-import 'package:recognizeme_ia/Activites/list.dart';
+import 'package:recognizeme_ia/Activites/details.dart';
 import 'package:recognizeme_ia/profile.dart';
 
 class Home extends StatelessWidget {
@@ -49,9 +49,15 @@ class Home extends StatelessWidget {
                 title: Text(activity['titre']),
                 subtitle: Text(activity['lieu']),
                 trailing: Text("\$${activity['prix']}"),
-                onTap: () {
-                  // Handle tapping on an activity to view details if needed
-                },
+               onTap: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ActivityDetailsScreen(activity),
+    ),
+  );
+},
+
               );
             },
           );
