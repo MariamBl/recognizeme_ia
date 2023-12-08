@@ -47,8 +47,9 @@ class Home extends StatelessWidget {
             label: 'Ajouter',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
+            //profile icone
+            icon: Icon(Icons.person),
+            label: 'Profile',
           ),
         ],
         onTap: (int index) {
