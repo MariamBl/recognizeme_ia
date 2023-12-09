@@ -16,12 +16,6 @@ class ActivityDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Image.network(
-              activityDetails['imageUrl'],
-              height: 200,
-              width: 200,
-              fit: BoxFit.cover,
-            ),
             SizedBox(height: 20),
             Text(
               activityDetails['titre'],
@@ -52,7 +46,16 @@ class ActivityDetailsScreen extends StatelessWidget {
               'Date de création: ${activityDetails['createAt']}',
               style: TextStyle(fontSize: 18),
             ),
-            // You can add more details here based on your Firestore document
+            SizedBox(height: 20),
+            // Display the activity image
+            activityDetails['image'] != null
+                ? Image.network(
+                    activityDetails['image'],
+                    width: 200, // Adjust the width as needed
+                    height: 200, // Adjust the height as needed
+                    fit: BoxFit.cover, // Adjust the fit based on your preference
+                  )
+                : Container(), // Placeholder if no image available
           ],
         ),
       ),

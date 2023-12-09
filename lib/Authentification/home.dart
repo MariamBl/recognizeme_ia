@@ -1,6 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:recognizeme_ia/Activites/Create.dart';
 import 'package:recognizeme_ia/Activites/details.dart';
 import 'package:recognizeme_ia/profile.dart';
@@ -39,25 +39,33 @@ class Home extends StatelessWidget {
             itemBuilder: (context, index) {
               var activity = snapshot.data!.docs[index].data() as Map<String, dynamic>;
 
-              return ListTile(
-                leading: Image.network(
-                  activity['imageUrl'],
-                  height: 50,
-                  width: 50,
-                  fit: BoxFit.cover,
-                ),
-                title: Text(activity['titre']),
-                subtitle: Text(activity['lieu']),
-                trailing: Text("\$${activity['prix']}"),
-               onTap: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => ActivityDetailsScreen(activity),
-    ),
-  );
-},
+              if (activity == null) {
+                return Container(); // Return an empty container if activity is null
+              }
 
+              // Fetch the image URL from Firestore data
+              var imageUrl = activity['image'] ?? ''; // Assuming 'image' is the key for the image URL
+
+              return ListTile(
+                leading: imageUrl.isNotEmpty
+                    ? Image.network(
+                        imageUrl,
+                        width: 50, // Adjust the width as needed
+                        height: 50, // Adjust the height as needed
+                        fit: BoxFit.cover, // Adjust the fit based on your preference
+                      )
+                    : Container(width: 50, height: 50), // Placeholder if no image available
+                title: Text(activity['titre'] ?? ''), // Add null check for titre
+                subtitle: Text(activity['lieu'] ?? ''), // Add null check for lieu
+                trailing: Text("\$${activity['prix'] ?? ''}"), // Add null check for prix
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ActivityDetailsScreen(activity),
+                    ),
+                  );
+                },
               );
             },
           );
@@ -69,7 +77,7 @@ class Home extends StatelessWidget {
             icon: Icon(Icons.home),
             label: 'Home',
           ),
-           BottomNavigationBarItem(
+          BottomNavigationBarItem(
             icon: Icon(Icons.add),
             label: 'Ajouter',
           ),
@@ -86,10 +94,8 @@ class Home extends StatelessWidget {
               MaterialPageRoute(builder: (context) => CreateActivityScreen()),
             );
           }
-        
         },
       ),
     );
   }
 }
-
