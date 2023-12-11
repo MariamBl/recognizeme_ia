@@ -5,11 +5,23 @@ import 'package:recognizeme_ia/Activites/Create.dart';
 import 'package:recognizeme_ia/Activites/details.dart';
 import 'package:recognizeme_ia/profile.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  String selectedCategory = 'all';
 
   void _logout() async {
     await _auth.signOut();
+  }
+
+  void _filterByCategory(String category) {
+    setState(() {
+      selectedCategory = category;
+    });
   }
 
   @override
@@ -25,51 +37,88 @@ class Home extends StatelessWidget {
           ),
         ],
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('activite').snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-              var activity = snapshot.data!.docs[index].data() as Map<String, dynamic>;
-
-              if (activity == null) {
-                return Container(); // Return an empty container if activity is null
-              }
-
-              // Fetch the image URL from Firestore data
-              var imageUrl = activity['image'] ?? ''; // Assuming 'image' is the key for the image URL
-
-              return ListTile(
-                leading: imageUrl.isNotEmpty
-                    ? Image.network(
-                        imageUrl,
-                        width: 50, // Adjust the width as needed
-                        height: 50, // Adjust the height as needed
-                        fit: BoxFit.cover, // Adjust the fit based on your preference
-                      )
-                    : Container(width: 50, height: 50), // Placeholder if no image available
-                title: Text(activity['titre'] ?? ''), // Add null check for titre
-                subtitle: Text(activity['lieu'] ?? ''), // Add null check for lieu
-                trailing: Text("\$${activity['prix'] ?? ''}"), // Add null check for prix
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ActivityDetailsScreen(activity),
-                    ),
+      body: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () => _filterByCategory('all'),
+                child: Text('All'),
+              ),
+              SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () => _filterByCategory('shopping'),
+                child: Text('Shopping'),
+              ),
+              SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () => _filterByCategory('sport'),
+                child: Text('Sport'),
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream:
+                  FirebaseFirestore.instance.collection('activite').snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(
+                    child: CircularProgressIndicator(),
                   );
-                },
-              );
-            },
-          );
-        },
+                }
+
+                var activities = snapshot.data!.docs
+                    .map((doc) => doc.data() as Map<String, dynamic>)
+                    .where((activity) {
+                  var category = activity['categorie'].trim() ?? '';
+                  return selectedCategory == 'all' || category == selectedCategory;
+                }).toList();
+
+                    
+                return ListView.builder(
+                  itemCount: activities.length,
+                  itemBuilder: (context, index) {
+                    var activity = activities[index];
+
+                    var imageUrl = activity['image'] ?? '';
+                    var category = activity['categorie'] ?? '';
+
+                    return ListTile(
+                      leading: imageUrl.isNotEmpty
+                          ? Image.network(
+                              imageUrl,
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                            )
+                          : Container(width: 50, height: 50),
+                      title: Text(activity['titre'] ?? ''),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(activity['lieu'] ?? ''),
+                        ],
+                      ),
+                      trailing: Text("\$${activity['prix'] ?? ''}"),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ActivityDetailsScreen(activity),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[

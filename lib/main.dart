@@ -6,6 +6,7 @@ import 'package:recognizeme_ia/Authentification/login.dart';
 import 'package:recognizeme_ia/firebase_options.dart';
 import 'package:get/get.dart';
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
