@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -34,6 +35,16 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
     var image =
         await picker.pickImage(source: ImageSource.gallery, maxHeight: 300);
     identifyImage(image);
+  }
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  Future<String> _getCurrentUserId() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      return user.uid;
+    } else {
+      return '';
+    }
   }
 
   Future loadEmojiModel() async {
@@ -132,7 +143,8 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
                   controller: nombreMinimumController,
-                  decoration: const InputDecoration(labelText: 'Nombre minimum'),
+                  decoration:
+                      const InputDecoration(labelText: 'Nombre minimum'),
                   keyboardType: TextInputType.number,
                 ),
               ),
@@ -140,22 +152,22 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
             const SizedBox(height: 20),
             SingleChildScrollView(
               child: Column(
-                children: _identifieResult != null &&
-                        _identifieResult!.isNotEmpty
-                    ? _identifieResult!.map((result) {
-                        String label = result["label"]
-                            .toString()
-                            .replaceAll(RegExp(r'[0-9]'), '');
-                        return Text(
-                          "Categorie : $label",
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 22.0,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        );
-                      }).toList()
-                    : [],
+                children:
+                    _identifieResult != null && _identifieResult!.isNotEmpty
+                        ? _identifieResult!.map((result) {
+                            String label = result["label"]
+                                .toString()
+                                .replaceAll(RegExp(r'[0-9]'), '');
+                            return Text(
+                              "Categorie : $label",
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 22.0,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            );
+                          }).toList()
+                        : [],
               ),
             ),
             const SizedBox(height: 20),
@@ -166,6 +178,8 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
               ),
               child: (_imageFile != null)
                   ? Image.file(_imageFile!, fit: BoxFit.cover)
+                  // : Image.asset(
+                  //       'assets/placeholder_image.png',
                   : Image.network(
                       'https://i.imgur.com/sUFH1Aq.png',
                       fit: BoxFit.cover,
@@ -202,6 +216,12 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                       _uploadedImageUrl =
                           await uploadImageToFirebase(_imageFile!);
                     }
+                    final userId = await _getCurrentUserId();
+                    final user = await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(userId)
+                        .get();
+                    
 
                     String category = '';
                     if (_identifieResult != null &&
@@ -215,13 +235,13 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                         .collection("activite")
                         .doc()
                         .set({
-                      "createAt": DateTime.now(),
                       "titre": titre,
                       "lieu": lieu,
                       "prix": prix,
                       "nombreMinimum": nombreMinimum,
                       "image": _uploadedImageUrl,
                       "categorie": category,
+                      'uid': userId,
                     });
 
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -245,8 +265,8 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text(
-                          "Please fill all fields and select an image."),
+                      content:
+                          Text("Please fill all fields and select an image."),
                     ),
                   );
                 }

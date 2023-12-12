@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recognizeme_ia/Activites/Create.dart';
 import 'package:recognizeme_ia/Activites/details.dart';
+import 'package:recognizeme_ia/profile.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -12,6 +13,15 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String selectedCategory = 'all';
+
+  String _getCurrentUserId() {
+    final user = _auth.currentUser;
+    if (user != null) {
+      return user.uid;
+    } else {
+      return '';
+    }
+  }
 
   void _logout() async {
     await _auth.signOut();
@@ -38,6 +48,7 @@ class _HomeState extends State<Home> {
       ),
       body: Column(
         children: [
+          SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -60,7 +71,10 @@ class _HomeState extends State<Home> {
           SizedBox(height: 10),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance.collection('activite').snapshots(),
+              stream: FirebaseFirestore.instance
+                  .collection('activite')
+                  .where('uid', isEqualTo: _getCurrentUserId())
+                  .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return Center(
@@ -88,7 +102,7 @@ class _HomeState extends State<Home> {
                         borderRadius: BorderRadius.circular(15.0),
                       ),
                       margin: EdgeInsets.all(20),
-                      color: Colors.white, 
+                      color: Colors.white,
                       child: InkWell(
                         onTap: () {
                           Navigator.push(
@@ -120,7 +134,6 @@ class _HomeState extends State<Home> {
                               subtitle: Text(activity['lieu'] ?? ''),
                               trailing: Text("\$${activity['prix'] ?? ''}"),
                             ),
-                           
                           ],
                         ),
                       ),
@@ -152,6 +165,11 @@ class _HomeState extends State<Home> {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => CreateActivityScreen()),
+            );
+          } else if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => UserProfile()),
             );
           }
         },
