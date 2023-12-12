@@ -16,6 +16,16 @@ class ActivityDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Container(
+              height: 200,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                  image: NetworkImage(activityDetails['image'] ?? ''),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
             SizedBox(height: 20),
             Text(
               activityDetails['titre'],
@@ -46,16 +56,6 @@ class ActivityDetailsScreen extends StatelessWidget {
               'Date de création: ${activityDetails['createAt']}',
               style: TextStyle(fontSize: 18),
             ),
-            SizedBox(height: 20),
-            // Display the activity image
-            activityDetails['image'] != null
-                ? Image.network(
-                    activityDetails['image'],
-                    width: 200, // Adjust the width as needed
-                    height: 200, // Adjust the height as needed
-                    fit: BoxFit.cover, // Adjust the fit based on your preference
-                  )
-                : Container(), // Placeholder if no image available
           ],
         ),
       ),

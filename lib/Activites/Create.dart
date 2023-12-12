@@ -89,35 +89,55 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Create Activity"),
+        title: const Text("Create Activity"),
       ),
-      body: SingleChildScrollView(
+      body: Container(
+        color: Colors.white,
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: ListView(
           children: [
-            TextField(
-              controller: titreController,
-              decoration: InputDecoration(labelText: 'Titre'),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: titreController,
+                  decoration: const InputDecoration(labelText: 'Titre'),
+                ),
+              ),
             ),
-            SizedBox(height: 20),
-            TextField(
-              controller: lieuController,
-              decoration: InputDecoration(labelText: 'Lieu'),
+            const SizedBox(height: 20),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: lieuController,
+                  decoration: const InputDecoration(labelText: 'Lieu'),
+                ),
+              ),
             ),
-            SizedBox(height: 20),
-            TextField(
-              controller: prixController,
-              decoration: InputDecoration(labelText: 'Prix'),
-              keyboardType: TextInputType.number,
+            const SizedBox(height: 20),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: prixController,
+                  decoration: const InputDecoration(labelText: 'Prix'),
+                  keyboardType: TextInputType.number,
+                ),
+              ),
             ),
-            SizedBox(height: 20),
-            TextField(
-              controller: nombreMinimumController,
-              decoration: InputDecoration(labelText: 'Nombre minimum'),
-              keyboardType: TextInputType.number,
+            const SizedBox(height: 20),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: nombreMinimumController,
+                  decoration: const InputDecoration(labelText: 'Nombre minimum'),
+                  keyboardType: TextInputType.number,
+                ),
+              ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             SingleChildScrollView(
               child: Column(
                 children: _identifieResult != null &&
@@ -128,7 +148,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                             .replaceAll(RegExp(r'[0-9]'), '');
                         return Text(
                           "Categorie : $label",
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.black,
                             fontSize: 22.0,
                             fontWeight: FontWeight.w900,
@@ -138,22 +158,34 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                     : [],
               ),
             ),
-            (_imageFile != null)
-                ? Image.file(_imageFile!)
-                : Image.network('https://i.imgur.com/sUFH1Aq.png'),
+            const SizedBox(height: 20),
+            Container(
+              height: 200,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+              ),
+              child: (_imageFile != null)
+                  ? Image.file(_imageFile!, fit: BoxFit.cover)
+                  : Image.network(
+                      'https://i.imgur.com/sUFH1Aq.png',
+                      fit: BoxFit.cover,
+                    ),
+            ),
+            const SizedBox(height: 20),
             FloatingActionButton(
               tooltip: 'Select Image',
               onPressed: () {
                 selectImage();
               },
-              child: Icon(
+              child: const Icon(
                 Icons.add_a_photo,
                 size: 25,
                 color: Colors.blue,
               ),
               backgroundColor: Colors.white,
+              shape: CircleBorder(),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
                 var titre = titreController.text.trim();
@@ -193,7 +225,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                     });
 
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
+                      const SnackBar(
                         content: Text("Activity added successfully!"),
                       ),
                     );
@@ -212,14 +244,14 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                   }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                       content: Text(
                           "Please fill all fields and select an image."),
                     ),
                   );
                 }
               },
-              child: Text("Add Activity"),
+              child: const Text("Add Activity"),
             ),
           ],
         ),

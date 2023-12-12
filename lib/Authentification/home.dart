@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recognizeme_ia/Activites/Create.dart';
 import 'package:recognizeme_ia/Activites/details.dart';
-import 'package:recognizeme_ia/profile.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -29,7 +28,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Home'),
-        backgroundColor: Colors.blue, // Add color to the AppBar
+        backgroundColor: Colors.blue,
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
@@ -61,8 +60,7 @@ class _HomeState extends State<Home> {
           SizedBox(height: 10),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream:
-                  FirebaseFirestore.instance.collection('activite').snapshots(),
+              stream: FirebaseFirestore.instance.collection('activite').snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return Center(
@@ -77,43 +75,57 @@ class _HomeState extends State<Home> {
                   return selectedCategory == 'all' || category == selectedCategory;
                 }).toList();
 
-                    
-                return ListView.builder(
-                  itemCount: activities.length,
-                  itemBuilder: (context, index) {
-                    var activity = activities[index];
-
+                return GridView.count(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.75,
+                  children: activities.map((activity) {
                     var imageUrl = activity['image'] ?? '';
                     var category = activity['categorie'] ?? '';
 
-                    return ListTile(
-                      leading: imageUrl.isNotEmpty
-                          ? Image.network(
-                              imageUrl,
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                            )
-                          : Container(width: 50, height: 50),
-                      title: Text(activity['titre'] ?? ''),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(activity['lieu'] ?? ''),
-                        ],
+                    return Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
                       ),
-                      trailing: Text("\$${activity['prix'] ?? ''}"),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                ActivityDetailsScreen(activity),
-                          ),
-                        );
-                      },
+                      margin: EdgeInsets.all(20),
+                      color: Colors.white, 
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ActivityDetailsScreen(activity),
+                            ),
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(15.0),
+                              child: imageUrl.isNotEmpty
+                                  ? Image.network(
+                                      imageUrl,
+                                      width: double.infinity,
+                                      height: 120,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Container(
+                                      width: double.infinity,
+                                      height: 120,
+                                      color: Colors.grey,
+                                    ),
+                            ),
+                            ListTile(
+                              title: Text(activity['titre'] ?? ''),
+                              subtitle: Text(activity['lieu'] ?? ''),
+                              trailing: Text("\$${activity['prix'] ?? ''}"),
+                            ),
+                           
+                          ],
+                        ),
+                      ),
                     );
-                  },
+                  }).toList(),
                 );
               },
             ),
@@ -131,7 +143,6 @@ class _HomeState extends State<Home> {
             label: 'Ajouter',
           ),
           BottomNavigationBarItem(
-            //profile icone
             icon: Icon(Icons.person),
             label: 'Profile',
           ),
