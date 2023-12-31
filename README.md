@@ -41,5 +41,5 @@ Pour enregistrer les informations saisies dans la base de données, un bouton "a
 
 ![image](https://github.com/MariamBl/recognizeme_ia/assets/86015308/a8ffc1e3-20d8-4446-8978-99761e7656f6)
 
-Voici les images pour tester les categories:
-https://drive.google.com/drive/folders/1MGmi2LIdmgbitq7rlEpNqmvKUEZIzeJW?usp=drive_link
+Voici les images pour tester les categories:[
+https://drive.google.com/drive/folders/1MGmi2LIdmgbitq7rlEpNqmvKUEZIzeJW?usp=sharing
