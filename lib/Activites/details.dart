@@ -9,7 +9,16 @@ class ActivityDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Activity Details'),
+        title: Text(
+          'Details',
+          style: TextStyle(
+            color: Colors.white, // Change the text color to white
+          ),
+        ),
+        iconTheme: IconThemeData(
+          color: Colors.white, // Change the icon color to white
+        ),
+        backgroundColor: Colors.indigo,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -17,7 +26,7 @@ class ActivityDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
-              height: 200,
+              height: 250,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 image: DecorationImage(
@@ -27,37 +36,61 @@ class ActivityDetailsScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-            Text(
-              activityDetails['titre'],
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            Center(
+              child: Text(
+                activityDetails['titre'],
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                  fontFamily: 'Roboto',
+                ),
+              ),
             ),
-            SizedBox(height: 10),
-            Text(
-              'Lieu: ${activityDetails['lieu']}',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Prix: \$${activityDetails['prix']}',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Nombre Minimum: ${activityDetails['nombreMinimum']}',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Catégorie: ${activityDetails['categorie']}',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Date de création: ${activityDetails['createAt']}',
-              style: TextStyle(fontSize: 18),
-            ),
+            SizedBox(height: 15),
+            _buildDetailItem(Icons.location_on, 'Lieu', activityDetails['lieu']),
+            _buildDetailItem(Icons.attach_money, 'Prix', '\$${activityDetails['prix']}'),
+            _buildDetailItem(Icons.group, 'Nombre Minimum', '${activityDetails['nombreMinimum']}'),
+            _buildDetailItem(Icons.category, 'Catégorie', activityDetails['categorie']),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildDetailItem(IconData icon, String label, String value) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            size: 24,
+            color: Colors.blue,
+          ),
+          SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              SizedBox(height: 4),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black54,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

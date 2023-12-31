@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class UserProfile extends StatefulWidget {
   @override
@@ -8,134 +8,180 @@ class UserProfile extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfile> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _birthdayController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _postalCodeController = TextEditingController();
-  final TextEditingController _cityController = TextEditingController();
+  late User? _user;
+  late TextEditingController _anniversaireController;
+  late TextEditingController _adresseController;
+  late TextEditingController _codePostalController;
+  late TextEditingController _villeController;
+  late TextEditingController _emailController;
 
-  String? _login;
-  String? _password;
-  DateTime? _birthday;
-  String? _address;
-  int? _postalCode;
-  String? _city;
+  @override
+  void initState() {
+    super.initState();
+    _anniversaireController = TextEditingController();
+    _adresseController = TextEditingController();
+    _codePostalController = TextEditingController();
+    _villeController = TextEditingController();
+    _emailController = TextEditingController();
+    _fetchUserData();
+  }
 
-  void _saveDataToFirebase() {
-    if (_login != null &&
-        _password != null &&
-        _birthday != null &&
-        _address != null &&
-        _postalCode != null &&
-        _city != null) {
-      // Assuming Firebase authentication is set up
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        // Assuming you have a 'users' collection in Firestore
-        _firestore.collection('users').doc(user.uid).set({
-          'login': _login,
-          'password': _password,
-          'birthday': _birthday,
-          'address': _address,
-          'postalCode': _postalCode,
-          'city': _city,
-        }).then((value) {
-          // Data saved successfully
-          // You can add any further actions after saving the data
-          print('Data saved to Firebase!');
-        }).catchError((error) {
-          // Handle error while saving data to Firebase
-          print('Failed to save data: $error');
-        });
-      }
+  void _fetchUserData() {
+    _user = FirebaseAuth.instance.currentUser;
+
+    if (_user != null) {
+      String userId = _user!.uid;
+
+      FirebaseFirestore.instance
+          .collection("users")
+          .doc(userId)
+          .get()
+          .then((DocumentSnapshot documentSnapshot) {
+        if (documentSnapshot.exists) {
+          Map<String, dynamic> data =
+              documentSnapshot.data() as Map<String, dynamic>;
+          setState(() {
+            _anniversaireController.text = data['anniversaire'] ?? '';
+            _adresseController.text = data['adresse'] ?? '';
+            _codePostalController.text = data['codePostal'] ?? '';
+            _villeController.text = data['ville'] ?? '';
+            _emailController.text = _user!.email ?? '';
+          });
+        }
+      });
     }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() {
+        _anniversaireController.text = "${picked.toLocal()}".split(' ')[0];
+      });
+    }
+  }
+
+  Widget _buildDataInput(IconData icon, String label, TextEditingController controller, String placeholder, {bool isNumeric = false, bool isDate = false}) {
+    return Card(
+      elevation: 4,
+      margin: EdgeInsets.symmetric(vertical: 8.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+        side: BorderSide(color: Colors.grey.shade300, width: 1.0),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: Colors.indigo),
+                SizedBox(width: 8),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.indigo,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            TextFormField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: placeholder,
+                border: InputBorder.none,
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(color: Colors.indigo, width: 2.0),
+                ),
+                filled: true,
+                fillColor: Colors.grey.shade200,
+                contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
+              onTap: isDate ? () => _selectDate(context) : null,
+              readOnly: isDate,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _updateUserData() {
+    if (_user != null) {
+      String userId = _user!.uid;
+
+      FirebaseFirestore.instance.collection('users').doc(userId).set({
+        'anniversaire': _anniversaireController.text,
+        'adresse': _adresseController.text,
+        'codePostal': _codePostalController.text,
+        'ville': _villeController.text,
+        'email': _user!.email,
+      }, SetOptions(merge: true)).then((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('User data updated successfully')),
+        );
+      }).catchError((error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update user data')),
+        );
+      });
+    }
+  }
+
+  void _logout() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('User Profile'),
+        backgroundColor: Colors.indigo,
+        title: Text('Mon Profil', style: TextStyle(color: Colors.white)),
+        iconTheme: IconThemeData(color: Colors.white), // Add this line to change the color of the back button icon
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            color: Colors.white,
+            onPressed: _logout,
+          ),
+        ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextFormField(
-              decoration: InputDecoration(labelText: 'Login'),
-              readOnly: true,
-              onChanged: (value) {
-                setState(() {
-                  _login = value;
-                });
-              },
-            ),
-            TextFormField(
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-              onChanged: (value) {
-                setState(() {
-                  _password = value;
-                });
-              },
-            ),
-            TextFormField(
-              decoration: InputDecoration(labelText: 'Birthday'),
-              readOnly: true, // You can use a DatePicker here
-              controller: _birthdayController,
-              onTap: () async {
-                DateTime? pickedDate = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(1900),
-                  lastDate: DateTime.now(),
-                );
-                if (pickedDate != null) {
-                  setState(() {
-                    _birthday = pickedDate;
-                    _birthdayController.text =
-                        pickedDate.toString(); // Format the date as needed
-                  });
-                }
-              },
-            ),
-            TextFormField(
-              decoration: InputDecoration(labelText: 'Address'),
-              onChanged: (value) {
-                setState(() {
-                  _address = value;
-                });
-              },
-            ),
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Postal Code',
-                counterText: '',
-              ),
-              keyboardType: TextInputType.number,
-              maxLength: 5,
-              onChanged: (value) {
-                setState(() {
-                  _postalCode = int.tryParse(value);
-                });
-              },
-            ),
-            TextFormField(
-              decoration: InputDecoration(labelText: 'City'),
-              onChanged: (value) {
-                setState(() {
-                  _city = value;
-                });
-              },
-            ),
-            ElevatedButton(
-              onPressed: _saveDataToFirebase,
-              child: Text('Valider'),
-            ),
-          ],
+        padding: EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildDataInput(Icons.email, 'Email', _emailController, 'Enter your email'),
+              _buildDataInput(Icons.cake_rounded, 'Anniversaire', _anniversaireController, 'Select your birthday', isDate: true),
+              _buildDataInput(Icons.house, 'Adresse', _adresseController, 'Enter your address'),
+              _buildDataInput(Icons.local_post_office, 'Code postal', _codePostalController, 'Enter your postal code', isNumeric: true),
+              _buildDataInput(Icons.location_city, 'Ville', _villeController, 'Enter your city'),
+            ],
+          ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _updateUserData,
+        child: Icon(Icons.save, color: Colors.white),
+        backgroundColor: Colors.indigo,
       ),
     );
   }

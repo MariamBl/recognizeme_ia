@@ -5,12 +5,12 @@ import 'package:recognizeme_ia/Activites/Create.dart';
 import 'package:recognizeme_ia/Activites/details.dart';
 import 'package:recognizeme_ia/profile.dart';
 
-class Home extends StatefulWidget {
+class HomePage extends StatefulWidget {
   @override
-  _HomeState createState() => _HomeState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _HomeState extends State<Home> {
+class _HomePageState extends State<HomePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String selectedCategory = 'all';
 
@@ -37,14 +37,22 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
-        backgroundColor: Colors.blue,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: _logout,
-          ),
-        ],
+        title: Row(
+          children: [
+            Icon(
+              Icons.home, // Add the home icon
+              color: Colors.white,
+            ),
+            SizedBox(width: 5),
+            Text(
+              'Home',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.indigo,
       ),
       body: Column(
         children: [
@@ -149,7 +157,7 @@ class _HomeState extends State<Home> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: 'Activités',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add),

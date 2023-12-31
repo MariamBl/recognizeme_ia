@@ -13,6 +13,10 @@ class Login extends StatelessWidget {
       Map<String, dynamic> userData = {
         'uid': user.uid,
         'email': user.email,
+        'anniversaire': '',
+        'adresse': '',
+        'code_postal': '',
+        'ville': '',
         // Add other user details as needed
       };
 
@@ -30,7 +34,7 @@ class Login extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       // appBar: AppBar(
-      //   // title: Text('Login'),
+      //   title: Center(child: Text('MiageD')), // Center the text
       //   backgroundColor: Colors.blue, // Set the color of the app bar
       // ),
       body: StreamBuilder<User?>(
@@ -41,7 +45,7 @@ class Login extends StatelessWidget {
             if (user != null) {
               // Store user data in Firestore upon successful login
               _storeUserData(user);
-              return Home();
+              return HomePage();
             } else {
               return SignInScreen();
             }
