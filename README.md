@@ -1,7 +1,7 @@
 # Application recognizeme_IA - Flutter
 ## À propos de l'application
 
-"EventFlow" est un projet Flutter qui se présente sous la forme d'une application mobile dédiée à la gestion d'activités. Cette application offre aux utilisateurs la possibilité de parcourir une liste complète d'activités, de les filtrer par catégorie, de consulter des informations détaillées sur chaque activité, et même d'ajouter une catégorie en utilisant une fonctionnalité de prédiction basée sur une image importée. De plus, elle a été testée sur la plateforme d'émulation Android afin d'assurer une expérience optimale pour les utilisateurs Android.
+Projet Flutter qui se présente sous la forme d'une application mobile dédiée à la gestion d'activités, développée en utilisant les technologies Flutter, TensorFlow et Firebase. Cette application offre aux utilisateurs la possibilité de parcourir une liste complète d'activités, de les filtrer par catégorie, de consulter des informations détaillées sur chaque activité, et même d'ajouter une catégorie en utilisant une fonctionnalité de prédiction basée sur une image importée. De plus, elle a été testée sur la plateforme d'émulation Android afin d'assurer une expérience optimale pour les utilisateurs Android.
 
 ## Interfaces
 ##  Interface de login
