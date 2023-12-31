@@ -33,23 +33,19 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _deleteActivity(String docId) async {
+    await FirebaseFirestore.instance.collection('activite').doc(docId).delete();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            Icon(
-              Icons.home, // Add the home icon
-              color: Colors.white,
-            ),
+            Icon(Icons.home, color: Colors.white),
             SizedBox(width: 5),
-            Text(
-              'Home',
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
+            Text('Home', style: TextStyle(color: Colors.white)),
           ],
         ),
         backgroundColor: Colors.indigo,
@@ -60,20 +56,11 @@ class _HomePageState extends State<HomePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                onPressed: () => _filterByCategory('all'),
-                child: Text('All'),
-              ),
+              ElevatedButton(onPressed: () => _filterByCategory('all'), child: Text('All')),
               SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: () => _filterByCategory('shopping'),
-                child: Text('Shopping'),
-              ),
+              ElevatedButton(onPressed: () => _filterByCategory('shopping'), child: Text('Shopping')),
               SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: () => _filterByCategory('sport'),
-                child: Text('Sport'),
-              ),
+              ElevatedButton(onPressed: () => _filterByCategory('sport'), child: Text('Sport')),
             ],
           ),
           SizedBox(height: 10),
@@ -85,9 +72,7 @@ class _HomePageState extends State<HomePage> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return Center(child: CircularProgressIndicator());
                 }
 
                 var activities = snapshot.data!.docs
@@ -102,48 +87,51 @@ class _HomePageState extends State<HomePage> {
                   childAspectRatio: 0.75,
                   children: activities.map((activity) {
                     var imageUrl = activity['image'] ?? '';
-                    var category = activity['categorie'] ?? '';
+                    var docId = activity['docId'];
 
                     return Card(
                       elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
                       margin: EdgeInsets.all(20),
                       color: Colors.white,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ActivityDetailsScreen(activity),
+                      child: Stack(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ActivityDetailsScreen(activity),
+                                ),
+                              );
+                            },
+                            child: Column(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  child: imageUrl.isNotEmpty
+                                      ? Image.network(imageUrl, width: double.infinity, height: 120, fit: BoxFit.cover)
+                                      : Container(width: double.infinity, height: 120, color: Colors.grey),
+                                ),
+                                ListTile(
+                                  title: Text(activity['titre'] ?? ''),
+                                  subtitle: Text(activity['lieu'] ?? ''),
+                                  trailing: Text("\$${activity['prix'] ?? ''}"),
+                                 
+                                ),
+                                 
+                              ],
                             ),
-                          );
-                        },
-                        child: Column(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(15.0),
-                              child: imageUrl.isNotEmpty
-                                  ? Image.network(
-                                      imageUrl,
-                                      width: double.infinity,
-                                      height: 120,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Container(
-                                      width: double.infinity,
-                                      height: 120,
-                                      color: Colors.grey,
-                                    ),
+                          ),
+                         
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: IconButton(
+                              icon: Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => _deleteActivity(docId),
                             ),
-                            ListTile(
-                              title: Text(activity['titre'] ?? ''),
-                              subtitle: Text(activity['lieu'] ?? ''),
-                              trailing: Text("\$${activity['prix'] ?? ''}"),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     );
                   }).toList(),
@@ -155,30 +143,15 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Activités',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            label: 'Ajouter',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Activités'),
+          BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Ajouter'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
         onTap: (int index) {
           if (index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => CreateActivityScreen()),
-            );
+            Navigator.push(context, MaterialPageRoute(builder: (context) => CreateActivityScreen()));
           } else if (index == 2) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => UserProfile()),
-            );
+            Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfile()));
           }
         },
       ),

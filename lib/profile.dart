@@ -14,6 +14,7 @@ class _UserProfileState extends State<UserProfile> {
   late TextEditingController _codePostalController;
   late TextEditingController _villeController;
   late TextEditingController _emailController;
+  late TextEditingController _passwordController;
 
   @override
   void initState() {
@@ -23,6 +24,7 @@ class _UserProfileState extends State<UserProfile> {
     _codePostalController = TextEditingController();
     _villeController = TextEditingController();
     _emailController = TextEditingController();
+    _passwordController = TextEditingController();
     _fetchUserData();
   }
 
@@ -38,8 +40,7 @@ class _UserProfileState extends State<UserProfile> {
           .get()
           .then((DocumentSnapshot documentSnapshot) {
         if (documentSnapshot.exists) {
-          Map<String, dynamic> data =
-              documentSnapshot.data() as Map<String, dynamic>;
+          Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
           setState(() {
             _anniversaireController.text = data['anniversaire'] ?? '';
             _adresseController.text = data['adresse'] ?? '';
@@ -66,7 +67,7 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
-  Widget _buildDataInput(IconData icon, String label, TextEditingController controller, String placeholder, {bool isNumeric = false, bool isDate = false}) {
+  Widget _buildDataInput(IconData icon, String label, TextEditingController controller, String placeholder, {bool isNumeric = false, bool isDate = false, bool isPassword = false}) {
     return Card(
       elevation: 4,
       margin: EdgeInsets.symmetric(vertical: 8.0),
@@ -114,6 +115,7 @@ class _UserProfileState extends State<UserProfile> {
               keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
               onTap: isDate ? () => _selectDate(context) : null,
               readOnly: isDate,
+              obscureText: isPassword,
             ),
           ],
         ),
@@ -143,6 +145,21 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
+  Future<void> _changePassword() async {
+    if (_passwordController.text.isNotEmpty) {
+      try {
+        await _user!.updatePassword(_passwordController.text);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Password updated successfully')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update password')),
+        );
+      }
+    }
+  }
+
   void _logout() async {
     await FirebaseAuth.instance.signOut();
     Navigator.of(context).pop();
@@ -154,7 +171,7 @@ class _UserProfileState extends State<UserProfile> {
       appBar: AppBar(
         backgroundColor: Colors.indigo,
         title: Text('Mon Profil', style: TextStyle(color: Colors.white)),
-        iconTheme: IconThemeData(color: Colors.white), // Add this line to change the color of the back button icon
+        iconTheme: IconThemeData(color: Colors.white),
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
@@ -170,6 +187,7 @@ class _UserProfileState extends State<UserProfile> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildDataInput(Icons.email, 'Email', _emailController, 'Enter your email'),
+              _buildDataInput(Icons.lock, 'Password', _passwordController, 'Enter your new password', isPassword: true),
               _buildDataInput(Icons.cake_rounded, 'Anniversaire', _anniversaireController, 'Select your birthday', isDate: true),
               _buildDataInput(Icons.house, 'Adresse', _adresseController, 'Enter your address'),
               _buildDataInput(Icons.local_post_office, 'Code postal', _codePostalController, 'Enter your postal code', isNumeric: true),
@@ -179,7 +197,10 @@ class _UserProfileState extends State<UserProfile> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _updateUserData,
+        onPressed: () {
+          _updateUserData();
+          _changePassword();
+        },
         child: Icon(Icons.save, color: Colors.white),
         backgroundColor: Colors.indigo,
       ),

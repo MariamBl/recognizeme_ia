@@ -207,7 +207,8 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
         category = _identifieResult![0]["label"].toString().replaceAll(RegExp(r'[0-9]'), '');
       }
 
-      await FirebaseFirestore.instance.collection("activite").doc().set({
+      // Create the document and get the document reference
+      DocumentReference docRef = await FirebaseFirestore.instance.collection("activite").add({
         "titre": titreController.text.trim(),
         "lieu": lieuController.text.trim(),
         "prix": prixController.text.trim(),
@@ -216,6 +217,9 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
         "categorie": category,
         'uid': userId,
       });
+
+      // Update the document with its own docId
+      await docRef.update({"docId": docRef.id});
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Activity added successfully!")),
@@ -235,5 +239,4 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
       );
     }
   }
-
 }
